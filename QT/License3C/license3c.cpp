@@ -3,7 +3,7 @@
 #include <QtEndian>
 
 void insertFeature(Feature* feature, Feature* nextFeature) {
-    qDebug() << "insertFeature";
+    //qDebug() << "insertFeature";
     Feature* lastFeature = feature;
     while (lastFeature->next != NULL) {
         lastFeature = lastFeature->next;
