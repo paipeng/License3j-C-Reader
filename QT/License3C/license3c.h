@@ -7,7 +7,7 @@ class LICENSE3C_EXPORT License3C
 {
 public:
     License3C();
-
+    static bool checkMagicBytes(const QByteArray magicByte);
     static void parseLicense(const QByteArray& byteArray);
 };
 
