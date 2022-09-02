@@ -4,13 +4,14 @@
 #include "License3C_global.h"
 
 
-typedef struct _license {
+typedef struct _feature {
     int name_length;
     char* name;
+    int type;
     int value_length;
     char* value;
-    struct _license* next;
-} License;
+    struct _feature* next;
+} Feature;
 
 
 class LICENSE3C_EXPORT License3C
@@ -18,8 +19,9 @@ class LICENSE3C_EXPORT License3C
 public:
     License3C();
     static bool checkMagicBytes(const QByteArray magicByte);
-    static License* parseLicense(const QByteArray& byteArray);
-
+    static Feature* parseLicense(const QByteArray& byteArray);
+    static bool isTypeVariableLength(int type);
+    static int getTypeLength(int type);
     enum Type {
         BINARY = 1, // VARIABLE_LENGTH
         STRING = 2, // VARIABLE_LENGTH

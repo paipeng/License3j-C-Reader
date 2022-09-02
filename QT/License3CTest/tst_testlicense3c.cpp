@@ -1,5 +1,6 @@
 #include <QtTest>
 #include "license3c.h"
+#include <QDebug>
 
 // add necessary includes here
 
@@ -50,7 +51,19 @@ void TestLicense3C::test_case1()
         keyFile.close();
     }
 
-    License3C::parseLicense(data);
+    Feature* feature = License3C::parseLicense(data);
+    if (feature != NULL) {
+#if 1
+        qDebug() << "check feature";
+        Feature* nextFeature = feature;
+        do {
+            qDebug() << "fetureType: " << nextFeature->type;
+            qDebug() << "nameLen: " << nextFeature->name_length;
+            qDebug() << "valueLen: " << nextFeature->value_length;
+            nextFeature = nextFeature->next;
+        } while (nextFeature != NULL);
+#endif
+    }
 }
 
 QTEST_APPLESS_MAIN(TestLicense3C)
