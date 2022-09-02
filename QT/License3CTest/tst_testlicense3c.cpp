@@ -88,6 +88,9 @@ void TestLicense3C::test_case1()
             qDebug() << "\n";
             nextFeature = nextFeature->next;
         } while (nextFeature != NULL);
+
+
+        freeFeatures(feature);
 #endif
     }
 }

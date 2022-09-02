@@ -14,6 +14,7 @@ typedef struct _feature {
 } Feature;
 
 void insertFeature(Feature* feature, Feature* nextFeature);
+void freeFeatures(Feature* feature);
 
 class LICENSE3C_EXPORT License3C
 {

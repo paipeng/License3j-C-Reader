@@ -11,6 +11,34 @@ void insertFeature(Feature* feature, Feature* nextFeature) {
 
     lastFeature ->next = nextFeature;
 }
+
+void freeFeatures(Feature* feature) {
+    Feature* nextFeature = feature->next;
+    if (feature->name != NULL) {
+        free(feature->name);
+        feature->name = NULL;
+    }
+    if (feature->value != NULL) {
+        free(feature->value);
+        feature->value = NULL;
+    }
+    free(feature);
+    feature = NULL;
+    while (nextFeature != NULL) {
+        Feature* tempFeature = nextFeature;
+        if (tempFeature->name != NULL) {
+            free(tempFeature->name);
+            tempFeature->name = NULL;
+        }
+        if (tempFeature->value != NULL) {
+            free(tempFeature->value);
+            tempFeature->value = NULL;
+        }
+        free(tempFeature);
+        tempFeature = NULL;
+        nextFeature = nextFeature->next;
+    }
+}
 License3C::License3C()
 {
 }
