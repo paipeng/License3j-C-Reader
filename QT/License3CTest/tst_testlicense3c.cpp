@@ -75,6 +75,15 @@ void TestLicense3C::test_case1()
                 createTime.setTime_t((int)(t/1000));
 
                 qDebug() << "expire date: " << createTime.toString("yyyy-MM-dd hh:mm:ss");
+            } else if (nextFeature->type == 1) { //binary
+                qDebug() << "binary hex: " << QByteArray::fromRawData(nextFeature->value, nextFeature->value_length).toHex();
+            } else if (nextFeature->type == 5) { //int
+                unsigned long t = 0;
+                for (int i = 0; i < nextFeature->value_length; i++) {
+                    //qDebug() << "date value: " << ((unsigned int)nextFeature->value[i] & 0xFF);
+                    t += (unsigned long)(nextFeature->value[i] & 0xFF) << (nextFeature->value_length - i - 1) * 8;
+                }
+                qDebug() << "int value: " << t;
             }
             qDebug() << "\n";
             nextFeature = nextFeature->next;
