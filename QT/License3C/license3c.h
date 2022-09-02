@@ -13,6 +13,7 @@ typedef struct _feature {
     struct _feature* next;
 } Feature;
 
+void insertFeature(Feature* feature, Feature* nextFeature);
 
 class LICENSE3C_EXPORT License3C
 {

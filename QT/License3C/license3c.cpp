@@ -2,6 +2,15 @@
 #include <QDebug>
 #include <QtEndian>
 
+void insertFeature(Feature* feature, Feature* nextFeature) {
+    qDebug() << "insertFeature";
+    Feature* lastFeature = feature;
+    while (lastFeature->next != NULL) {
+        lastFeature = lastFeature->next;
+    }
+
+    lastFeature ->next = nextFeature;
+}
 License3C::License3C()
 {
 }
@@ -49,15 +58,14 @@ Feature* License3C::parseLicense(const QByteArray& byteArray) {
         feature = (Feature*) malloc(sizeof (Feature));
         memset(feature, 0, sizeof(Feature));
         int pos = 4;
-        Feature* nextFeature = feature->next;
         do {
             Feature* newFeature = NULL;
             if (pos > 4) {
                 qDebug() << "create next node";
                 newFeature = (Feature*) malloc(sizeof (Feature));
                 memset(newFeature, 0, sizeof(Feature));
-                nextFeature = newFeature;
-                nextFeature = nextFeature->next;
+
+
             } else {
                 newFeature = feature;
             }
@@ -99,14 +107,21 @@ Feature* License3C::parseLicense(const QByteArray& byteArray) {
             memcpy(newFeature->name, name.data(), sizeof(char) * name.size());
 
             // read value
-            QByteArray value = byteArray.mid(pos, feature->value_length);
-            pos += feature->value_length;
+            QByteArray value = byteArray.mid(pos, newFeature->value_length);
+            pos += value.size();
             newFeature->value = (char*)malloc (sizeof(char) * value.size());
             memcpy(newFeature->value, value.data(), sizeof(char) * value.size());
 
             if (pos > 40) {
              //   break;
             }
+
+            // insert into node list
+            if (newFeature != feature) {
+                insertFeature(feature, newFeature);
+            }
+//            nextFeature = newFeature;
+//            nextFeature = nextFeature->next;
         } while (pos < byteArray.size());
 
 
