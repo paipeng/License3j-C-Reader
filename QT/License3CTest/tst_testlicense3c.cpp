@@ -54,12 +54,29 @@ void TestLicense3C::test_case1()
     Feature* feature = License3C::parseLicense(data);
     if (feature != NULL) {
 #if 1
-        qDebug() << "check feature";
+        qDebug() << "check feature\n\n\n";
         Feature* nextFeature = feature;
         do {
             qDebug() << "fetureType: " << nextFeature->type;
             qDebug() << "nameLen: " << nextFeature->name_length;
             qDebug() << "valueLen: " << nextFeature->value_length;
+            qDebug() << "name: " <<  QString::fromLocal8Bit(nextFeature->name, nextFeature->name_length);
+            if (nextFeature->type == 2) {
+                qDebug() << "string value: " <<  QString::fromLocal8Bit(nextFeature->value, nextFeature->value_length);
+            } else if (nextFeature->type == 11) {
+                unsigned long t = 0;
+                for (int i = 0; i < nextFeature->value_length; i++) {
+                    //qDebug() << "date value: " << ((unsigned int)nextFeature->value[i] & 0xFF);
+                    t += (unsigned long)(nextFeature->value[i] & 0xFF) << (nextFeature->value_length - i - 1) * 8;
+                }
+
+                qDebug() << "date value: " << t;
+                QDateTime createTime;
+                createTime.setTime_t((int)(t/1000));
+
+                qDebug() << "expire date: " << createTime.toString("yyyy-MM-dd hh:mm:ss");
+            }
+            qDebug() << "\n";
             nextFeature = nextFeature->next;
         } while (nextFeature != NULL);
 #endif
