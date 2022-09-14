@@ -1,4 +1,4 @@
-#ifndef LICENSE3C_H
+﻿#ifndef LICENSE3C_H
 #define LICENSE3C_H
 
 #include "License3C_global.h"
@@ -13,9 +13,15 @@ typedef struct _feature {
     struct _feature* next;
 } Feature;
 
-void insertFeature(Feature* feature, Feature* nextFeature);
-void freeFeatures(Feature* feature);
 
+#if defined(c_plusplus) || defined(__cplusplus)
+extern "C" {
+#endif
+LICENSE3C_EXPORT void insertFeature(Feature* feature, Feature* nextFeature);
+LICENSE3C_EXPORT void freeFeatures(Feature* feature);
+#if defined(c_plusplus) || defined(__cplusplus)
+}
+#endif
 class LICENSE3C_EXPORT License3C
 {
 public:
