@@ -55,3 +55,5 @@ License3C.pro.user
 QT/build-License3CTest-Desktop_Qt_5_12_11_clang_64bit-Debug
 License3CTest.pro.user
 QT/build-License3C-Desktop_Qt_5_12_11_clang_64bit-Release
+QT/build-License3C-Desktop_Qt_5_12_12_MSVC2017_64bit-Debug/
+QT/build-License3C-Desktop_Qt_5_12_12_MSVC2017_64bit-Release/
