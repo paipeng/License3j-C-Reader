@@ -40,3 +40,12 @@ PKCS#1v1.5 Padding
 - SHA-512 HASHING
 - RSA Decoding Signature with Public Key
 - modified Qt-Secret Library https://github.com/paipeng/Qt-Secret
+
+
+
+Workflow
+1. generate RSA Key pair with Qt-Secret, exporting to public/private key files
+2. loading public/private key (Java License3J)
+3. generate license file and signing with private key (Java)
+4. loading license file and public key in Qt (Qt-Secret)
+5. Signature verifying
