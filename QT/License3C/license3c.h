@@ -31,6 +31,9 @@ public:
     static bool isTypeVariableLength(int type);
     static int getTypeLength(int type);
     static bool verify(Feature* feature, const QByteArray& publicKeyBytes);
+    static QByteArray serialized(Feature* feature) ;
+    static QByteArray parseSignature(Feature* feature);
+
     enum Type {
         BINARY = 1, // VARIABLE_LENGTH
         STRING = 2, // VARIABLE_LENGTH

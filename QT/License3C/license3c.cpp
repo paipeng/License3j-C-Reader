@@ -167,70 +167,119 @@ Feature* License3C::parseLicense(const QByteArray& byteArray, const QByteArray& 
     return feature;
 }
 
+QByteArray License3C::serialized(Feature* feature) {
+    QByteArray serialized;
+    if (feature != NULL) {
+        qDebug() << "serialized\n\n\n";
+        QByteArray serialized;
+        Feature* nextFeature = feature;
+        do {
+            if (nextFeature->type == 1 && nextFeature->name_length == 16 && strcmp(nextFeature->name, "licenseSignature") == 0) {
+
+            } else {
+                qDebug() << "fetureType: " << nextFeature->type;
+                qDebug() << "nameLen: " << nextFeature->name_length;
+                qDebug() << "valueLen: " << nextFeature->value_length;
+                qDebug() << "name: " <<  QString::fromLocal8Bit(nextFeature->name, nextFeature->name_length);
+
+                QByteArray featureSerialized;
+                for(int i = 0; i != sizeof(nextFeature->type); ++i) {
+                    featureSerialized.append((char)((nextFeature->type >> (sizeof(nextFeature->type) - 1 - i)* 8) & 0xFF));
+                }
+
+                for(int i = 0; i != sizeof(nextFeature->name_length); ++i) {
+                    featureSerialized.append((char)((nextFeature->name_length >> (sizeof(nextFeature->name_length) - 1 - i)* 8) & 0xFF));
+                }
+
+                if (nextFeature->type == 1 || nextFeature->type == 2) { // VARIABLE_LENGTH
+                    for(int i = 0; i != sizeof(nextFeature->value_length); ++i) {
+                        featureSerialized.append((char)((nextFeature->value_length >> (sizeof(nextFeature->value_length) - 1 - i)* 8) & 0xFF));
+                    }
+                }
+
+                featureSerialized.append(nextFeature->name, nextFeature->name_length);
+                featureSerialized.append(nextFeature->value, nextFeature->value_length);
+
+                int featureSerializedLength = featureSerialized.length();
+                for(int i = 0; i != sizeof(featureSerializedLength); ++i) {
+                    serialized.append((char)((featureSerializedLength >> (sizeof(featureSerializedLength) - 1 - i)* 8) & 0xFF));
+                }
+                serialized.append(featureSerialized);
+            }
+
+            qDebug() << "\n";
+            nextFeature = nextFeature->next;
+        } while (nextFeature != NULL);
+
+        return serialized;
+    } else {
+        return serialized;
+    }
+}
+
+QByteArray License3C::parseSignature(Feature* feature) {
+    QByteArray signature;
+    if (feature != NULL) {
+        Feature* nextFeature = feature;
+        do {
+            //qDebug() << "parseSignature fetureType: " << nextFeature->type;
+            //qDebug() << "nameLen: " << nextFeature->name_length;
+            //qDebug() << "valueLen: " << nextFeature->value_length;
+            if (nextFeature->type == 1) { //binary
+                if (nextFeature->name_length == 16 && strcmp(nextFeature->name, "licenseSignature") == 0) {
+                    signature = QByteArray::fromRawData(nextFeature->value, nextFeature->value_length);
+                    //qDebug() << "signature found: " << signature.toHex();
+                    break;
+                }
+            }
+            nextFeature = nextFeature->next;
+        } while (nextFeature != NULL);
+
+        return signature;
+    } else {
+        return signature;
+    }
+}
+
 bool License3C::verify(Feature* feature, const QByteArray& publicKeyBytes) {
     qDebug() << "verify pub Hex: " << QString(publicKeyBytes.toHex());
 
     QRSAEncryption e(QRSAEncryption::Rsa::RSA_2048);
 
     if (feature != NULL) {
-#if 1
         qDebug() << "check feature\n\n\n";
-        QByteArray signature;
-        QByteArray serialized;
-        Feature* nextFeature = feature;
-        do {
-            qDebug() << "fetureType: " << nextFeature->type;
-            qDebug() << "nameLen: " << nextFeature->name_length;
-            qDebug() << "valueLen: " << nextFeature->value_length;
-            qDebug() << "name: " <<  QString::fromLocal8Bit(nextFeature->name, nextFeature->name_length);
-            if (nextFeature->type == 2) {
-                qDebug() << "string value: " <<  QString::fromLocal8Bit(nextFeature->value, nextFeature->value_length);
-            } else if (nextFeature->type == 11) {
-                unsigned long t = 0;
-                for (int i = 0; i < nextFeature->value_length; i++) {
-                    //qDebug() << "date value: " << ((unsigned int)nextFeature->value[i] & 0xFF);
-                    t += (unsigned long)(nextFeature->value[i] & 0xFF) << (nextFeature->value_length - i - 1) * 8;
-                }
+        QByteArray signature = parseSignature(feature);
+        qDebug() << "signature found: " << signature.toHex();
+        QByteArray serializedData = serialized(feature);
+        qDebug() << "serializedData: " << serializedData.toHex();
 
-                qDebug() << "date value: " << t;
-                QDateTime createTime;
-                createTime.setTime_t((int)(t/1000));
+        QString MAGIC = "21CE4E5E";
+        int serializedDataLength = serializedData.length();
+        QByteArray serializedDataAll;
 
-                qDebug() << "expire date: " << createTime.toString("yyyy-MM-dd hh:mm:ss");
-            } else if (nextFeature->type == 1) { //binary
-                qDebug() << "binary hex: " << QByteArray::fromRawData(nextFeature->value, nextFeature->value_length).toHex();
-                if (nextFeature->name_length == 16 && strcmp(nextFeature->name, "licenseSignature") == 0) {
-                    signature = QByteArray::fromRawData(nextFeature->value, nextFeature->value_length);
-                    qDebug() << "signature found: " << signature.toHex();
-                }
-            } else if (nextFeature->type == 5) { //int
-                unsigned long t = 0;
-                for (int i = 0; i < nextFeature->value_length; i++) {
-                    //qDebug() << "date value: " << ((unsigned int)nextFeature->value[i] & 0xFF);
-                    t += (unsigned long)(nextFeature->value[i] & 0xFF) << (nextFeature->value_length - i - 1) * 8;
-                }
-                qDebug() << "int value: " << t;
-            }
-            qDebug() << "\n";
-            nextFeature = nextFeature->next;
-        } while (nextFeature != NULL);
+        serializedDataAll.append(QByteArray::fromHex(MAGIC.toUtf8()));
+        serializedDataAll.append(serializedData);
+        qDebug() << "serializedDataAll: " << serializedDataAll.toHex();
 
-#if 1
-        if (e.checkSignMessagePKCS15(serialized, signature, publicKeyBytes, QRSAEncryption::Auto)) {
+        QString debugSerialized = "21ce4e5e0000002100000002000000060000000f646f6d61696e7777772e70616970656e672e636f6d000000160000000b000000066578706972650000018ff73def94000000150000000b000000056973737565000001889a6667940000002000000005000000146d61784167656e74436f6d70616e79436f756e74000000280000001e00000005000000126d617842617463685472616365436f756e740000ea600000001b000000050000000f6d617850726f64756374436f756e74000000c800000019000000050000000d6d61785472616365436f756e740007a12000000018000000050000000c6d617855736572436f756e740000003c000000190000000200000005000000086f776e65725061692050656e6700000022000000020000000f000000077369676e61747572654469676573745348412d353132000000340000000200000004000000247575696464373463366239362d373831342d343633652d383364642d643636613339656262373635";
+        QByteArray debugSerializedData = QByteArray::fromHex(debugSerialized.toUtf8());
+        if (serializedDataAll == debugSerializedData) {
+            qDebug() << "serailized ok";
+        } else {
+
+            qDebug() << "serializedDataAll: " << debugSerializedData.toHex();
+            qDebug() << "serailized failed";
+        }
+
+        if (e.checkSignMessagePKCS15(serializedData, signature, publicKeyBytes, QRSAEncryption::Auto)) {
             qDebug() << " message signed success";
             return true;
         } else {
             qDebug() << " message signed failed";
             return false;
         }
-#endif
         return true;
-#endif
     } else {
         return false;
     }
-
-
-
-
 }
