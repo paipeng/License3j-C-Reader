@@ -191,7 +191,7 @@ QByteArray License3C::serialized(Feature* feature) {
                     featureSerialized.append((char)((nextFeature->name_length >> (sizeof(nextFeature->name_length) - 1 - i)* 8) & 0xFF));
                 }
 
-                if (nextFeature->type == 1 || nextFeature->type == 2) { // VARIABLE_LENGTH
+                if (nextFeature->type == 1 || nextFeature->type == 2 || nextFeature->type == 9 || nextFeature->type == 10) { // VARIABLE_LENGTH
                     for(int i = 0; i != sizeof(nextFeature->value_length); ++i) {
                         featureSerialized.append((char)((nextFeature->value_length >> (sizeof(nextFeature->value_length) - 1 - i)* 8) & 0xFF));
                     }
