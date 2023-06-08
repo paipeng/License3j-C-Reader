@@ -58,7 +58,7 @@ void TestLicense3C::test_case1()
 
     Feature* feature = License3C::parseLicense(data, pub);
     if (feature != NULL) {
-#if 1
+#if 0
         qDebug() << "check feature\n\n\n";
         Feature* nextFeature = feature;
         do {
@@ -95,8 +95,8 @@ void TestLicense3C::test_case1()
         } while (nextFeature != NULL);
 
 
-        freeFeatures(feature);
 #endif
+        freeFeatures(feature);
     }
 }
 

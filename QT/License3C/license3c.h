@@ -30,7 +30,7 @@ public:
     static Feature* parseLicense(const QByteArray& byteArray, const QByteArray& publicKeyBytes);
     static bool isTypeVariableLength(int type);
     static int getTypeLength(int type);
-    static bool verify(const QByteArray& byteArray, const QByteArray& publicKeyBytes);
+    static bool verify(Feature* feature, const QByteArray& publicKeyBytes);
     enum Type {
         BINARY = 1, // VARIABLE_LENGTH
         STRING = 2, // VARIABLE_LENGTH

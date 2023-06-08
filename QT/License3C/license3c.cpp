@@ -3,6 +3,7 @@
 #include <QtEndian>
 #include <qrsaencryption.h>
 #include <QCryptographicHash>
+#include <QDateTime>
 
 
 void insertFeature(Feature* feature, Feature* nextFeature) {
@@ -162,14 +163,74 @@ Feature* License3C::parseLicense(const QByteArray& byteArray, const QByteArray& 
     }
 
 
-    verify(byteArray, publicKeyBytes);
+    verify(feature, publicKeyBytes);
     return feature;
 }
 
-bool License3C::verify(const QByteArray& byteArray, const QByteArray& publicKeyBytes) {
-
-    //qDebug() << "pub Hex: " << QString(pub.toHex());
+bool License3C::verify(Feature* feature, const QByteArray& publicKeyBytes) {
+    qDebug() << "verify pub Hex: " << QString(publicKeyBytes.toHex());
 
     QRSAEncryption e(QRSAEncryption::Rsa::RSA_2048);
-    return true;
+
+    if (feature != NULL) {
+#if 1
+        qDebug() << "check feature\n\n\n";
+        QByteArray signature;
+        QByteArray serialized;
+        Feature* nextFeature = feature;
+        do {
+            qDebug() << "fetureType: " << nextFeature->type;
+            qDebug() << "nameLen: " << nextFeature->name_length;
+            qDebug() << "valueLen: " << nextFeature->value_length;
+            qDebug() << "name: " <<  QString::fromLocal8Bit(nextFeature->name, nextFeature->name_length);
+            if (nextFeature->type == 2) {
+                qDebug() << "string value: " <<  QString::fromLocal8Bit(nextFeature->value, nextFeature->value_length);
+            } else if (nextFeature->type == 11) {
+                unsigned long t = 0;
+                for (int i = 0; i < nextFeature->value_length; i++) {
+                    //qDebug() << "date value: " << ((unsigned int)nextFeature->value[i] & 0xFF);
+                    t += (unsigned long)(nextFeature->value[i] & 0xFF) << (nextFeature->value_length - i - 1) * 8;
+                }
+
+                qDebug() << "date value: " << t;
+                QDateTime createTime;
+                createTime.setTime_t((int)(t/1000));
+
+                qDebug() << "expire date: " << createTime.toString("yyyy-MM-dd hh:mm:ss");
+            } else if (nextFeature->type == 1) { //binary
+                qDebug() << "binary hex: " << QByteArray::fromRawData(nextFeature->value, nextFeature->value_length).toHex();
+                if (nextFeature->name_length == 16 && strcmp(nextFeature->name, "licenseSignature") == 0) {
+                    signature = QByteArray::fromRawData(nextFeature->value, nextFeature->value_length);
+                    qDebug() << "signature found: " << signature.toHex();
+                }
+            } else if (nextFeature->type == 5) { //int
+                unsigned long t = 0;
+                for (int i = 0; i < nextFeature->value_length; i++) {
+                    //qDebug() << "date value: " << ((unsigned int)nextFeature->value[i] & 0xFF);
+                    t += (unsigned long)(nextFeature->value[i] & 0xFF) << (nextFeature->value_length - i - 1) * 8;
+                }
+                qDebug() << "int value: " << t;
+            }
+            qDebug() << "\n";
+            nextFeature = nextFeature->next;
+        } while (nextFeature != NULL);
+
+#if 1
+        if (e.checkSignMessagePKCS15(serialized, signature, publicKeyBytes, QRSAEncryption::Auto)) {
+            qDebug() << " message signed success";
+            return true;
+        } else {
+            qDebug() << " message signed failed";
+            return false;
+        }
+#endif
+        return true;
+#endif
+    } else {
+        return false;
+    }
+
+
+
+
 }
