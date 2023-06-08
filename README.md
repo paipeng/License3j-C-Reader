@@ -29,3 +29,14 @@ Value length 4bytes (currently only for: BINARY, STRING, BIGINTEGER and BIGDECIM
 
 
 UTF-8 character set
+
+
+
+Signature verify
+PKCS#1v1.5 Padding
+
+- RSA 2048 Public Key loading
+- Serialization License
+- SHA-512 HASHING
+- RSA Decoding Signature with Public Key
+- modified Qt-Secret Library https://github.com/paipeng/Qt-Secret
