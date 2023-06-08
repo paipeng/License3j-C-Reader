@@ -2,7 +2,7 @@
 #define LICENSE3C_H
 
 #include "License3C_global.h"
-
+#include <QByteArray>
 
 typedef struct _feature {
     int name_length;
@@ -27,9 +27,10 @@ class LICENSE3C_EXPORT License3C
 public:
     License3C();
     static bool checkMagicBytes(const QByteArray magicByte);
-    static Feature* parseLicense(const QByteArray& byteArray);
+    static Feature* parseLicense(const QByteArray& byteArray, const QByteArray& publicKeyBytes);
     static bool isTypeVariableLength(int type);
     static int getTypeLength(int type);
+    static bool verify(const QByteArray& byteArray, const QByteArray& publicKeyBytes);
     enum Type {
         BINARY = 1, // VARIABLE_LENGTH
         STRING = 2, // VARIABLE_LENGTH

@@ -21,3 +21,12 @@ unix {
     target.path = /usr/lib
 }
 !isEmpty(target.path): INSTALLS += target
+
+
+INCLUDEPATH += $$PWD/qt-secret/
+
+win32:CONFIG (release, debug|release): LIBS += -L$$PWD/libs/x64 -lQt-Secret
+else:win32:CONFIG (debug, debug|release): LIBS += -L$$PWD/libs/x64 -lQt-Secret
+else:unix: LIBS += -L$$PWD/libs/x64 -lQt-Secret
+
+

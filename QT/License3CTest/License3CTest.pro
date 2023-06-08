@@ -18,3 +18,11 @@ SOURCES += \
 HEADERS += \
     ../License3C/License3C_global.h \
     ../License3C/license3c.h
+
+
+
+INCLUDEPATH += $$PWD/../License3C/qt-secret/
+
+win32:CONFIG (release, debug|release): LIBS += -L$$PWD/../License3C/libs/x64 -lQt-Secret -lQtBigInt
+else:win32:CONFIG (debug, debug|release): LIBS += -L$$PWD/../License3C/libs/x64 -lQt-Secret -lQtBigInt
+else:unix: LIBS += -L$$PWD/../License3C/libs/x64 -lQt-Secret -lQtBigInt

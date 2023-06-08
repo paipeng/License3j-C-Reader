@@ -1,6 +1,9 @@
 #include "license3c.h"
 #include <QDebug>
 #include <QtEndian>
+#include <qrsaencryption.h>
+#include <QCryptographicHash>
+
 
 void insertFeature(Feature* feature, Feature* nextFeature) {
     //qDebug() << "insertFeature";
@@ -77,7 +80,7 @@ int License3C::getTypeLength(int type) {
     }
 }
 
-Feature* License3C::parseLicense(const QByteArray& byteArray) {
+Feature* License3C::parseLicense(const QByteArray& byteArray, const QByteArray& publicKeyBytes) {
     qDebug() << "parseLicense: ";// << byteArray;
     Feature* feature = NULL;
     QByteArray magicBytes = byteArray.mid(0, 4);
@@ -157,5 +160,16 @@ Feature* License3C::parseLicense(const QByteArray& byteArray) {
     } else {
         qDebug() << "magic bytes invalid!";
     }
+
+
+    verify(byteArray, publicKeyBytes);
     return feature;
+}
+
+bool License3C::verify(const QByteArray& byteArray, const QByteArray& publicKeyBytes) {
+
+    //qDebug() << "pub Hex: " << QString(pub.toHex());
+
+    QRSAEncryption e(QRSAEncryption::Rsa::RSA_2048);
+    return true;
 }
