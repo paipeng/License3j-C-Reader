@@ -271,7 +271,7 @@ bool License3C::verify(Feature* feature, const QByteArray& publicKeyBytes) {
             qDebug() << "serailized failed";
         }
 
-        if (e.checkSignMessagePKCS15(serializedData, signature, publicKeyBytes, QRSAEncryption::Auto)) {
+        if (e.checkSignMessagePKCS15(serializedDataAll, signature, publicKeyBytes, QRSAEncryption::Auto)) {
             qDebug() << " message signed success";
             return true;
         } else {
