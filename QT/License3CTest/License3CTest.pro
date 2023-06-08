@@ -9,7 +9,7 @@ TEMPLATE = app
 
 INCLUDEPATH += ../License3C
 SOURCES +=  \
-    tst_testlicense3c.cpp
+    test_testlicense3c.cpp
 
 
 SOURCES += \
