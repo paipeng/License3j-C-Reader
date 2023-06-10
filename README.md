@@ -33,7 +33,7 @@ UTF-8 character set
 
 
 Signature verify
-PKCS#1v1.5 Padding
+SHA256withRSA PKCS#1v1.5 Padding
 
 - RSA 2048 Public Key loading
 - Serialization License
